@@ -1,5 +1,5 @@
 import React, {Component, useState, useEffect} from 'react';
-import { Alert, StyleSheet, Text, View, AppRegistry, BackHandler, ToastAndroid, YellowBox } from 'react-native';
+import { Alert, Linking, StyleSheet, Text, View, AppRegistry, BackHandler, ToastAndroid, YellowBox } from 'react-native';
 import { WebView } from 'react-native-webview';
 import utf8 from 'utf8';
 import base64 from 'base-64';
@@ -10,6 +10,7 @@ import { createAppContainer } from 'react-navigation';
 import AsyncStorage from '@react-native-community/async-storage';
 import RNBootSplash from 'react-native-bootsplash'
 import OneSignal from 'react-native-onesignal'
+import SendIntentAndroid from 'react-native-send-intent'
 
 import { InterstitialAd, AdEventType, TestIds } from '@react-native-firebase/admob';
 
@@ -55,7 +56,7 @@ export default class WebView_Activity extends Component {
   showInterstitialAd = () => {
     // Create a new instance
     // const interstitialAd = InterstitialAd.createForAdRequest(TestIds.INTERSTITIAL);
-    const adUnitId = __DEV__ ? TestIds.INTERSTITIAL : 'ca-app-pub-8640206644623436/7250350542';
+    const adUnitId = __DEV__ ? TestIds.INTERSTITIAL : 'ca-app-pub-4577801432842517/8464621950';
 
     const interstitialAd = InterstitialAd.createForAdRequest(adUnitId);
     // Add event handlers
@@ -69,10 +70,28 @@ export default class WebView_Activity extends Component {
     interstitialAd.load();
   }
 
+  webView = {
+    canGoBack: false,
+    ref: null,
+  }
+
+  onAndroidBackPress = () => {
+    if (this.webView.canGoBack && this.webView.ref) {
+      this.webView.ref.goBack();
+      return true;
+    } else {
+       BackHandler.exitApp();  // 앱 종료
+       return false;
+    }
+  }
+
   // 이벤트 등록
   componentDidMount() {
 
-    this.showInterstitialAd();
+    //this.showInterstitialAd();
+    if (Platform.OS === 'android') {
+      BackHandler.addEventListener('hardwareBackPress', this.onAndroidBackPress);
+    }
 
     // const unitId = 'ca-app-pub-8640206644623436/7250350542';
     // const advert = firebase.admob().interstitial(unitId);
@@ -103,6 +122,10 @@ export default class WebView_Activity extends Component {
       OneSignal.removeEventListener('received', this.onReceived);
       OneSignal.removeEventListener('opened', this.onOpened);
       OneSignal.removeEventListener('ids', this.onIds);
+
+      if (Platform.OS === 'android') {
+        BackHandler.removeEventListener('hardwareBackPress', this.onAndroidBackPress);
+      }
   }
 
   // 이벤트 동작
@@ -127,9 +150,10 @@ export default class WebView_Activity extends Component {
   // }
 
   render() {
+    const urI = 'http://lotto.difsoft.com/app/index.php?device=mobile'
     const { navigation } = this.props;
     const kakaoID = navigation.getParam('kakaoID', 'NO-User');
-
+    console.log(kakaoID)
     const injectedJavascript = `(function() {
           window.postMessage = function(data) {
         window.ReactNativeWebView.postMessage(data);
@@ -145,23 +169,42 @@ export default class WebView_Activity extends Component {
 
     return (
         <WebView
-          ref = { webview => {this.webview = webview; }}
+          ref = { webView => {this.webView.ref = webView; }}
+	        onNavigationStateChange={(navState) => {
+            console.log(navState.url.slice(0,6)) 
+            if (navState.url.slice(0,6) == 'intent') {
+              // this.webView.ref.stopLoading();
+              SendIntentAndroid.openAppWithUri(navState.url);
+              // Linking.sendIntent(navState.url);
+            } else {
+              this.webView.canGoBack = navState.canGoBack;
+            }
+          }}
           injectedJavaScript={injectedJavascript}
           onMessage={this._onMessage}
           source={{
-            uri: 'http://dif2.asuscomm.com/app/index.php?device=mobile',
-            origin: 'http://dif2.asuscomm.com',
+            uri: urI,
             method: 'POST',
             body: `${kakaoID}`,
 
           }}
-          originWhitelist={['*']}
+          bounces={false}
+          allowFileAccess={true}
+          domStorageEnabled={true}
+          javaScriptEnabled={true}
+          geolocationEnabled={true}
+          saveFormDataDisabled={true}
+          allowFileAccessFromFileURLS={true}
+          allowUniversalAccessFromFileURLs={true}
+          originWhitelist = {'http://*', 'https://*', 'intent://*', "sms://*", "file://*"}
+	        cacheEnabled={false}
+	        ignoreSslError={true}
           javaScriptEnabled={true}
           useWebKit={true}
           onLoadEnd= {() => {
             console.log('LOAD END!!');
           }}
-          onError = {err => {
+          onError = {(err) => {
             console.log('ERROR', err);
           }}
         />
@@ -180,7 +223,7 @@ export default class WebView_Activity extends Component {
     console.log("asd")
     Alert.alert(e.nativeEvent.data)
     console.log(e.nativeEvent.data)
-    this.webview.postMessage("리액트에서 보내는 메세지입니다.")
+    this.webView.ref.postMessage("리액트에서 보내는 메세지입니다.")
   }
 }
 

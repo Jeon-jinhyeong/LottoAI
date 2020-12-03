@@ -8,7 +8,7 @@
 
     <style name="BootTheme" parent="AppTheme">
         <!-- set bootsplash.xml as activity background -->
-        <item name="android:background">@drawable/launch_screen</item>
+        <item name="android:background">@drawable/lotto_splash</item>
     </style>
 
 </resources>

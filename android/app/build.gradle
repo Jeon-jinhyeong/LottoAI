@@ -137,8 +137,8 @@ android {
         versionName "1.0"
         multiDexEnabled true
 
-        manifestPlaceholders = [onesignal_app_id               : "59f6d43d-7191-49a2-844e-fb729d625e5b",
-                                onesignal_google_project_number: "982992521086"]
+        manifestPlaceholders = [onesignal_app_id               : "50e7cb3c-6266-42a9-88ec-c84cd6ad245d",
+                                onesignal_google_project_number: "119663055611"]
     }
     splits {
         abi {

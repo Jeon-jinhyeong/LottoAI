@@ -20,7 +20,7 @@ public class MainActivity extends ReactActivity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    RNBootSplash.init(R.drawable.launch_screen, MainActivity.this);
+    RNBootSplash.init(R.drawable.lotto_splash, MainActivity.this);
 
     MobileAds.initialize(this, "ca-app-pub-8640206644623436~9448358223");
   }

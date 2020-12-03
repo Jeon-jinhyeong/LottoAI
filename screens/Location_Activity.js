@@ -35,7 +35,7 @@ export default class Location_Activity extends React.Component {
 
   render() {
     const { navigation } = this.props
-    const kakao_ID = JSON.stringify(navigation.getParam('kakao', 'NO-User'));
+    const kakao_ID = JSON.stringify(navigation.getParam('kakaoID', 'NO-User'));
     console.log(kakao_ID)
     return (
 

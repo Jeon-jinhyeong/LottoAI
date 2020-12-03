@@ -89,17 +89,19 @@ export default class Login extends Component {
               isKakaoLogging: false
             })
   
-            return fetch(`http://dif2.asuscomm.com/app/api/?cmd=set_check_id_in_profile&mb_id=${result.id}`)
+            return fetch(`http://lotto.difsoft.com/app/api/?cmd=set_check_id_in_profile&mb_id=${result.id}`)
             .then((response) => response.json())
             .then((responseJson) => {
               if (responseJson) {
+		            console.log("회원첵크");
                 AsyncStorage.setItem('userId', `m_id=${result.id}`);
                 this.props.navigation.navigate('Web_View', { kakaoID : `m_id=${result.id}` });
               } else {
-                fetch(`http://dif2.asuscomm.com/app/api/?cmd=register&mode=kakao&id=${result.id}&name=${result.nickname}&email=${result.email}&profileImgUrl=${result.profile_image_url}&img_path=${result.profile_image_url}`)
+                fetch(`http://lotto.difsoft.com/app/api/?cmd=register&mode=kakao&id=${result.id}&name=${result.nickname}&email=${result.email}&profileImgUrl=${result.profile_image_url}&img_path=${result.profile_image_url}`)
                 .then((response) => response.json())
                 .then((responseJson) => {
                   if (responseJson.statusCode == 1) {
+		                console.log("회원가입");
                     AsyncStorage.setItem('userId', `m_id=${result.id}`);
                     this.props.navigation.navigate('Web_View', { kakaoID : `m_id=${result.id}` });
                   }
