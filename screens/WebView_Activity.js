@@ -14,11 +14,51 @@ import SendIntentAndroid from 'react-native-send-intent'
 
 import { InterstitialAd, AdEventType, TestIds } from '@react-native-firebase/admob';
 
+import RNIap, {
+  InAppPurchase,
+  PurchaseError,
+  SubscriptionPurchase,
+  acknowledgePurchaseAndroid,
+  consumePurchaseAndroid,
+  finishTransaction,
+  finishTransactionIOS,
+  purchaseErrorListener,
+  purchaseUpdatedListener,
+  } from 'react-native-iap';
+
 // var text = utf8.encode("m_id=1241927064")
 // // let login_web = base64.encode("m_id=" + text)
 // let login_web = new Buffer(text).toString('base64');
 
 const adUnitId = __DEV__ ? TestIds.INTERSTITIAL : 'ca-app-pub-8640206644623436/7250350542';
+
+const itemSkus = Platform.select({
+  ios: [
+      'com.Lotto-AI.10game',
+      'com.Lotto-AI.10game', // dooboolab
+  ],
+  android: [
+      'android.test.purchased',
+      // 'android.test.canceled',
+      // 'android.test.refunded',
+      // 'android.test.item_unavailable',
+      // 'point_1000', '5000_point', // dooboolab
+      '10game',
+  ],
+});
+
+const itemSubs = Platform.select({
+  ios: [
+      'com.cooni.point1000',
+      'com.cooni.point5000', // dooboolab
+  ],
+  android: [
+      '10game', // subscription
+  ],
+});
+
+let purchaseUpdateSubscription;
+let purchaseErrorSubscription;
 
 export default class WebView_Activity extends Component {
   
@@ -29,6 +69,9 @@ export default class WebView_Activity extends Component {
       asd: '',
       loaded: false,
       setLoaded: false,
+      productList: [],
+      receipt: '',
+      availableItemsMessage: '',
 
     };
     OneSignal.init("59f6d43d-7191-49a2-844e-fb729d625e5b");
@@ -85,8 +128,106 @@ export default class WebView_Activity extends Component {
     }
   }
 
-  // 이벤트 등록
+  goNext = () => {
+    Alert.alert('Receipt', this.state.receipt);
+  };
+
+  getItems = async () => {
+      try {
+        const products = await RNIap.getProducts(itemSkus);
+        // const products = await RNIap.getSubscriptions(itemSkus);
+        console.log('Products', products);
+        this.setState({ productList: products });
+      } catch (err) {
+        console.warn(err.code, err.message);
+      }
+  };
+
+  getSubscriptions = async () => {
+      try {
+        const products = await RNIap.getSubscriptions(itemSubs);
+        console.log('Products', products);
+        this.setState({ productList: products });
+      } catch (err) {
+        console.warn(err.code, err.message);
+      }
+  };
+
+  getAvailablePurchases = async () => {
+      try {
+        console.info(
+            'Get available purchases (non-consumable or unconsumed consumable)',
+        );
+        const purchases = await RNIap.getAvailablePurchases();
+        console.info('Available purchases :: ', purchases);
+        if (purchases && purchases.length > 0) {
+            this.setState({
+              availableItemsMessage: `Got ${purchases.length} items.`,
+              receipt: purchases[0].transactionReceipt,
+            });
+        }
+      } catch (err) {
+        console.warn(err.code, err.message);
+        Alert.alert(err.message);
+      }
+  };
+
+  // Version 3 apis
+  requestPurchase = async (sku) => {
+      try {
+        RNIap.requestPurchase(sku);
+      } catch (err) {
+        console.warn(err.code, err.message);
+      }
+  };
+
+  requestSubscription = async (sku) => {
+      try {
+        RNIap.requestSubscription(sku);
+      } catch (err) {
+        Alert.alert(err.message);
+      }
+  };
+
   componentDidMount() {
+
+    try {
+      const result = await RNIap.initConnection();
+      await RNIap.consumeAllItemsAndroid();
+      console.log('result', result);
+    } catch (err) {
+        console.warn(err.code, err.message);
+    }
+
+    purchaseUpdateSubscription = purchaseUpdatedListener(
+        async (purchase) => {
+            const receipt = purchase.transactionReceipt;
+            if (receipt) {
+                try {
+                    // if (Platform.OS === 'ios') {
+                    //   finishTransactionIOS(purchase.transactionId);
+                    // } else if (Platform.OS === 'android') {
+                    //   // If consumable (can be purchased again)
+                    //   consumePurchaseAndroid(purchase.purchaseToken);
+                    //   // If not consumable
+                    //   acknowledgePurchaseAndroid(purchase.purchaseToken);
+                    // }
+                    const ackResult = await finishTransaction(purchase);
+                } catch (ackErr) {
+                    console.warn('ackErr', ackErr);
+                }
+
+                this.setState({ receipt }, () => this.goNext());
+            }
+        },
+    );
+
+    purchaseErrorSubscription = purchaseErrorListener(
+        (error) => {
+            console.log('purchaseErrorListener', error);
+            Alert.alert('purchase error', JSON.stringify(error));
+        },
+    );
 
     //this.showInterstitialAd();
     if (Platform.OS === 'android') {
@@ -126,6 +267,15 @@ export default class WebView_Activity extends Component {
       if (Platform.OS === 'android') {
         BackHandler.removeEventListener('hardwareBackPress', this.onAndroidBackPress);
       }
+
+      if (purchaseUpdateSubscription) {
+        purchaseUpdateSubscription.remove();
+        purchaseUpdateSubscription = null;
+      }
+      if (purchaseErrorSubscription) {
+        purchaseErrorSubscription.remove();
+        purchaseErrorSubscription = null;
+      }
   }
 
   // 이벤트 동작
@@ -150,6 +300,8 @@ export default class WebView_Activity extends Component {
   // }
 
   render() {
+    const { productList, receipt, availableItemsMessage } = this.state;
+    const receipt100 = receipt.substring(0, 100);
     const urI = 'http://lotto.difsoft.com/app/index.php?device=mobile'
     const { navigation } = this.props;
     const kakaoID = navigation.getParam('kakaoID', 'NO-User');
