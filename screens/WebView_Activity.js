@@ -25,13 +25,13 @@ export default class WebView_Activity extends Component {
   constructor(props){
     super(props);
 
-    this.state = {
+        this.state = {
       asd: '',
       loaded: false,
       setLoaded: false,
 
     };
-    OneSignal.init("59f6d43d-7191-49a2-844e-fb729d625e5b");
+    OneSignal.init("1dcdf0c6-ac3b-4120-adc4-2a41ece2bea7");
 
     OneSignal.addEventListener('received', this.onReceived);
     OneSignal.addEventListener('opened', this.onOpened);
@@ -155,7 +155,7 @@ export default class WebView_Activity extends Component {
     const kakaoID = navigation.getParam('kakaoID', 'NO-User');
     console.log(kakaoID)
     const injectedJavascript = `(function() {
-          window.postMessage = function(data) {
+        window.postMessage = function(data) {
         window.ReactNativeWebView.postMessage(data);
       };
     })()`
@@ -197,8 +197,10 @@ export default class WebView_Activity extends Component {
           allowFileAccessFromFileURLS={true}
           allowUniversalAccessFromFileURLs={true}
           originWhitelist = {'http://*', 'https://*', 'intent://*', "sms://*", "file://*"}
-	        cacheEnabled={false}
-	        ignoreSslError={true}
+          cacheEnabled={false}
+          //cacheMode={'LOAD_NO_CACHE'} //dif
+          //incognito={false} //dif
+          ignoreSslError={true}
           javaScriptEnabled={true}
           useWebKit={true}
           onLoadEnd= {() => {
@@ -218,12 +220,12 @@ export default class WebView_Activity extends Component {
         /> */
     );
   }
-
+  // 이부분이 메세지 받고 리엑트에서 보내느 부분
   _onMessage = (e) => {
-    console.log("asd")
-    Alert.alert(e.nativeEvent.data)
-    console.log(e.nativeEvent.data)
-    this.webView.ref.postMessage("리액트에서 보내는 메세지입니다.")
+    console.log("step 1: react-navtive: console log 1")
+    //Alert.alert(e.nativeEvent.data) // 웹에서 보낸 메세지 창으로 뛰우는 부분
+    console.log(e.nativeEvent.data) // 웹에서 보낸 메세지 로그로 찍는 부분
+    this.webView.ref.postMessage("step 2: 리액트에서 보내는 메세지입니다.")
   }
 }
 

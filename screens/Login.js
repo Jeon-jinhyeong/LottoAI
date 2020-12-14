@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {Platform, StyleSheet, Text, View, Image, YellowBox, BackHandler, ToastAndroid} from 'react-native';
+import {ImageBackground, Platform, StyleSheet, Text, View, Image, YellowBox, BackHandler, ToastAndroid} from 'react-native';
 
 import AsyncStorage from '@react-native-community/async-storage';
 import KakaoLogins from '@react-native-seoul/kakao-login';
@@ -7,6 +7,7 @@ import NativeButton from 'apsl-react-native-button';
 import base64 from 'base-64';
 import utf8 from 'utf8';
 import { Buffer } from 'buffer';
+import OneSignal from 'react-native-onesignal'
 
 
 
@@ -29,12 +30,45 @@ export default class Login extends Component {
         id: 'profile has not fetched',
         email: 'profile has not fetched',
         profile_image_url: '',
+        id3: '',
     };
 
     if (!KakaoLogins) {
         console.log('Not Linked');
     }
+
+
+
+    OneSignal.init("1dcdf0c6-ac3b-4120-adc4-2a41ece2bea7");
+
+    OneSignal.addEventListener('received', this.onReceived);
+    OneSignal.addEventListener('opened', this.onOpened);
+    OneSignal.addEventListener('ids', this.onIds);
   }
+
+  onReceived(notification) {
+    console.log("Notification received: ", notification);
+  }
+
+  onOpened(openResult) {
+    console.log('Message: ', openResult.notification.payload.body);
+    console.log('Data: ', openResult.notification.payload.additionalData);
+    console.log('isActive: ', openResult.notification.isAppInFocus);
+    console.log('openResult: ', openResult);
+  }
+
+  onIds(device) {
+    console.log('dif1 Device info: ', device);
+    console.log('dif2 Device info: ', device.userId );
+    // this.setState({
+    //   id3: device.userId,
+    // });
+    global.id3 = device.userId;
+    console.log('dif3 global.id3: ', id3 );
+
+  }
+
+
 
   // 이벤트 등록
   componentDidMount() {
@@ -68,6 +102,9 @@ export default class Login extends Component {
   //   return true;
   // }
 
+
+
+
   _signInAsync = async () => {
       this.setState({
         isKakaoLogging: true
@@ -89,15 +126,16 @@ export default class Login extends Component {
               isKakaoLogging: false
             })
   
-            return fetch(`http://lotto.difsoft.com/app/api/?cmd=set_check_id_in_profile&mb_id=${result.id}`)
+            return fetch(`http:/lotto.difsoft.com/app/api/?cmd=set_check_id_in_profile&mb_id=${result.id}`)
             .then((response) => response.json())
             .then((responseJson) => {
               if (responseJson) {
 		            console.log("회원첵크");
                 AsyncStorage.setItem('userId', `m_id=${result.id}`);
                 this.props.navigation.navigate('Web_View', { kakaoID : `m_id=${result.id}` });
+
               } else {
-                fetch(`http://lotto.difsoft.com/app/api/?cmd=register&mode=kakao&id=${result.id}&name=${result.nickname}&email=${result.email}&profileImgUrl=${result.profile_image_url}&img_path=${result.profile_image_url}`)
+                fetch(`http://lotto.difsoft.com/app/api/?cmd=register&mode=kakao&id=${result.id}&name=${result.nickname}&email=${global.id3}&profileImgUrl=${result.profile_image_url}&img_path=${result.profile_image_url}`)
                 .then((response) => response.json())
                 .then((responseJson) => {
                   if (responseJson.statusCode == 1) {
@@ -144,6 +182,7 @@ export default class Login extends Component {
           id: 'profile has not fetched',
           email: 'profile has not fetched',
           profile_image_url: '',
+          id3: '',
           isKakaoLogging: false
         })
       })
@@ -178,19 +217,13 @@ export default class Login extends Component {
         })
       });
   };
-
-
-
   
   render() {
     // console.log(this.state.id)
     return (
       <View style={styles.container}>
-          <View style={styles.header}>
-
-              <Text>LOGIN</Text>
-
-          </View>
+          <ImageBackground style={{ flex: 1 }} source={require("./images/Login_Background.jpg")} resizeMode="cover">
+          <View style={styles.content}></View>
           <View style={styles.content}>
               <NativeButton
                   isLoading={this.state.isNaverLoggingin}
@@ -198,9 +231,9 @@ export default class Login extends Component {
                   activeOpacity={0.5}
                   style={styles.btnKakaoLogin}
                   textStyle={styles.txtNaverLogin}
-              >LOGIN</NativeButton>
+              >카카오 로그인</NativeButton>
 
-              <Text>{this.state.token}</Text>
+              {/* <Text>{this.state.token}</Text>
 
               <NativeButton
                   onPress={() => this.kakaoLogout()}
@@ -218,8 +251,9 @@ export default class Login extends Component {
               >getProfile</NativeButton>
 
               <Text>{this.state.id}</Text>
-              <Text>{this.state.email}</Text>
+              <Text>{this.state.email}</Text> */}
           </View>
+          </ImageBackground>
       </View>
     );
   }
@@ -229,9 +263,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     flexDirection: 'column',
-    marginTop: Platform.OS === 'android' ? 0 : 24,
-    paddingTop: Platform.OS === 'android' ? 24 : 0,
-    backgroundColor: 'white',
+    marginTop: Platform.OS === 'android' ? 0 : 0,
+    paddingTop: Platform.OS === 'android' ? 0 : 0,
   },
   header: {
     flex: 8.8,

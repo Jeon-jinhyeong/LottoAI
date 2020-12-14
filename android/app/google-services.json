@@ -1,34 +1,41 @@
 {
   "project_info": {
-    "project_number": "119663055611",
-    "firebase_url": "https://ailotto-8dfdb.firebaseio.com",
-    "project_id": "ailotto-8dfdb",
-    "storage_bucket": "ailotto-8dfdb.appspot.com"
+    "project_number": "409170145572",
+    "project_id": "ailotto-f86ac",
+    "storage_bucket": "ailotto-f86ac.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:119663055611:android:c313144df67f6bb2c4d65e",
+        "mobilesdk_app_id": "1:409170145572:android:c52362071bf25a23cb43b1",
         "android_client_info": {
           "package_name": "com.lotto_ai"
         }
       },
       "oauth_client": [
         {
-          "client_id": "119663055611-qd73fl5vaegthk3i5c1n6spks60n2tug.apps.googleusercontent.com",
+          "client_id": "409170145572-4ngnl86euda44dlvoomb8se115moqruj.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.lotto_ai",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "409170145572-vspe6nsdecfobunfmtvgbev29vbgcpei.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyBycA5h16ONJLQ5UfYUzkCJEmsgSWow8tY"
+          "current_key": "AIzaSyDaEe3BUWIvfstSBIaOtdPtMsk_BgLvfn8"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "119663055611-qd73fl5vaegthk3i5c1n6spks60n2tug.apps.googleusercontent.com",
+              "client_id": "409170145572-vspe6nsdecfobunfmtvgbev29vbgcpei.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
