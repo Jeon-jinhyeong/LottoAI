@@ -45,6 +45,7 @@ const itemSubs = Platform.select({
         'com.cooni.point5000', // dooboolab
     ],
     android: [
+        'android.test.purchased',
         '10game', // subscription
     ],
 });

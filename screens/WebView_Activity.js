@@ -65,14 +65,13 @@ export default class WebView_Activity extends Component {
   constructor(props){
     super(props);
 
-        this.state = {
+    this.state = {
       asd: '',
       loaded: false,
       setLoaded: false,
       productList: [],
       receipt: '',
       availableItemsMessage: '',
-
     };
     OneSignal.init("1dcdf0c6-ac3b-4120-adc4-2a41ece2bea7");
 
@@ -138,6 +137,7 @@ export default class WebView_Activity extends Component {
         // const products = await RNIap.getSubscriptions(itemSkus);
         console.log('Products', products);
         this.setState({ productList: products });
+        this.requestPurchase(itemSkus[0])
       } catch (err) {
         console.warn(err.code, err.message);
       }
@@ -189,14 +189,14 @@ export default class WebView_Activity extends Component {
       }
   };
 
-  componentDidMount() {
+  async componentDidMount() {
 
     try {
       const result = await RNIap.initConnection();
       await RNIap.consumeAllItemsAndroid();
       console.log('result', result);
     } catch (err) {
-        console.warn(err.code, err.message);
+      console.warn(err.code, err.message);
     }
 
     purchaseUpdateSubscription = purchaseUpdatedListener(
@@ -300,8 +300,6 @@ export default class WebView_Activity extends Component {
   // }
 
   render() {
-    const { productList, receipt, availableItemsMessage } = this.state;
-    const receipt100 = receipt.substring(0, 100);
     const urI = 'http://lotto.difsoft.com/app/index.php?device=mobile'
     const { navigation } = this.props;
     const kakaoID = navigation.getParam('kakaoID', 'NO-User');
@@ -311,6 +309,8 @@ export default class WebView_Activity extends Component {
         window.ReactNativeWebView.postMessage(data);
       };
     })()`
+    const { productList, receipt, availableItemsMessage } = this.state;
+    const receipt100 = receipt.substring(0, 100);
 
     // const Banner = firebase.admob.Banner;
     // const AdRequest = firebase.admob.AdRequest;
@@ -377,7 +377,11 @@ export default class WebView_Activity extends Component {
     console.log("step 1: react-navtive: console log 1")
     //Alert.alert(e.nativeEvent.data) // 웹에서 보낸 메세지 창으로 뛰우는 부분
     console.log(e.nativeEvent.data) // 웹에서 보낸 메세지 로그로 찍는 부분
-    this.webView.ref.postMessage("step 2: 리액트에서 보내는 메세지입니다.")
+    if (e.nativeEvent.data == "step 0: web side windos.postMessage") {
+      this.getItems()
+      // this.getAvailablePurchases()
+    }
+    // this.webView.ref.postMessage("step 2: 리액트에서 보내는 메세지입니다.")
   }
 }
 
