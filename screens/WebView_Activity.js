@@ -137,7 +137,7 @@ export default class WebView_Activity extends Component {
         // const products = await RNIap.getSubscriptions(itemSkus);
         console.log('Products', products);
         this.setState({ productList: products });
-        this.requestPurchase(itemSkus[0])
+        this.requestSubscription(itemSkus[0])
       } catch (err) {
         console.warn(err.code, err.message);
       }
@@ -321,7 +321,7 @@ export default class WebView_Activity extends Component {
 
     return (
         <WebView
-          ref = { webView => {this.webView.ref = webView; }}
+          ref = { webView => { this.webView.ref = webView; }}
 	        onNavigationStateChange={(navState) => {
             console.log(navState.url.slice(0,6)) 
             if (navState.url.slice(0,6) == 'intent') {
@@ -348,7 +348,7 @@ export default class WebView_Activity extends Component {
           saveFormDataDisabled={true}
           allowFileAccessFromFileURLS={true}
           allowUniversalAccessFromFileURLs={true}
-          originWhitelist = {'http://*', 'https://*', 'intent://*', "sms://*", "file://*"}
+          originWhitelist = {'http://*', 'https://*', 'intent://*', "sms://*", "file://*", "*"}
           cacheEnabled={false}
           //cacheMode={'LOAD_NO_CACHE'} //dif
           //incognito={false} //dif
@@ -377,9 +377,14 @@ export default class WebView_Activity extends Component {
     console.log("step 1: react-navtive: console log 1")
     //Alert.alert(e.nativeEvent.data) // 웹에서 보낸 메세지 창으로 뛰우는 부분
     console.log(e.nativeEvent.data) // 웹에서 보낸 메세지 로그로 찍는 부분
-    if (e.nativeEvent.data == "step 0: web side windos.postMessage") {
+    if (e.nativeEvent.data == "0") {
       this.getItems()
-      // this.getAvailablePurchases()
+    } else if (e.nativeEvent.data == "1") {
+      this.getItems()
+    } else if (e.nativeEvent.data == "2") {
+      this.getItems()
+    } else if (e.nativeEvent.data == "3") {
+      this.getItems()
     }
     // this.webView.ref.postMessage("step 2: 리액트에서 보내는 메세지입니다.")
   }
