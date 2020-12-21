@@ -131,8 +131,8 @@ export default class Login extends Component {
             .then((responseJson) => {
               if (responseJson) {
 		            console.log("회원첵크");
-                AsyncStorage.setItem('userId', `m_id=${result.id}`);
-                this.props.navigation.navigate('Web_View', { kakaoID : `m_id=${result.id}` });
+                AsyncStorage.setItem('userId', `${result.id}`);
+                this.props.navigation.navigate('Web_View', { kakaoID : `${result.id}` });
 
               } else {
                 fetch(`http://lotto.difsoft.com/app/api/?cmd=register&mode=kakao&id=${result.id}&name=${result.nickname}&email=${global.id3}&profileImgUrl=${result.profile_image_url}&img_path=${result.profile_image_url}`)
@@ -140,8 +140,8 @@ export default class Login extends Component {
                 .then((responseJson) => {
                   if (responseJson.statusCode == 1) {
 		                console.log("회원가입");
-                    AsyncStorage.setItem('userId', `m_id=${result.id}`);
-                    this.props.navigation.navigate('Web_View', { kakaoID : `m_id=${result.id}` });
+                    AsyncStorage.setItem('userId', `${result.id}`);
+                    this.props.navigation.navigate('Web_View', { kakaoID : `${result.id}` });
                   }
                 });
               }

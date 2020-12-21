@@ -266,38 +266,38 @@ export default class InAppPurcharse_Activity extends Component {
                 Get Products ({productList.length})
                 </NativeButton>
                 {productList.map((product, i) => {
-                return (
-                    <View
-                    key={i}
-                    style={{
-                        flexDirection: 'column',
-                    }}
-                    >
-                    <Text
+                    return (
+                        <View
+                        key={i}
                         style={{
-                        marginTop: 20,
-                        fontSize: 12,
-                        color: 'black',
-                        minHeight: 100,
-                        alignSelf: 'center',
-                        paddingHorizontal: 20,
+                            flexDirection: 'column',
                         }}
-                    >
-                        {JSON.stringify(product)}
-                    </Text>
-                    <NativeButton
-                        // onPress={(): void => this.requestPurchase(product.productId)}
-                        onPress={() =>
-                        this.requestSubscription(product.productId)
-                        }
-                        activeOpacity={0.5}
-                        style={styles.btn}
-                        textStyle={styles.txt}
-                    >
-                        Request purchase for above product
-                    </NativeButton>
-                    </View>
-                );
+                        >
+                        <Text
+                            style={{
+                            marginTop: 20,
+                            fontSize: 12,
+                            color: 'black',
+                            minHeight: 100,
+                            alignSelf: 'center',
+                            paddingHorizontal: 20,
+                            }}
+                        >
+                            {JSON.stringify(product)}
+                        </Text>
+                        <NativeButton
+                            // onPress={(): void => this.requestPurchase(product.productId)}
+                            onPress={() =>
+                                this.requestSubscription(product.productId)
+                            }
+                            activeOpacity={0.5}
+                            style={styles.btn}
+                            textStyle={styles.txt}
+                        >
+                            Request purchase for above product
+                        </NativeButton>
+                        </View>
+                    );
                 })}
             </ScrollView>
             </View>

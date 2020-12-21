@@ -72,6 +72,7 @@ export default class WebView_Activity extends Component {
       productList: [],
       receipt: '',
       availableItemsMessage: '',
+      KAKAOID: '',
     };
     OneSignal.init("1dcdf0c6-ac3b-4120-adc4-2a41ece2bea7");
 
@@ -127,17 +128,25 @@ export default class WebView_Activity extends Component {
     }
   }
 
-  goNext = () => {
-    Alert.alert('Receipt', this.state.receipt);
+  goNext = (data) => {
+    // Alert.alert('Receipt', this.state.receipt);
+    const ProductName = JSON.parse(data);
+
+    AsyncStorage.getItem('userId', (err, result) => {
+      const ID = JSON.parse(result);
+      this.webView.ref.postMessage(ID + " " + ProductName.productId)
+    })
+    
+    
   };
 
-  getItems = async () => {
+  getItems = async (data) => {
       try {
         const products = await RNIap.getProducts(itemSkus);
         // const products = await RNIap.getSubscriptions(itemSkus);
         console.log('Products', products);
         this.setState({ productList: products });
-        this.requestSubscription(itemSkus[0])
+        this.requestSubscription(itemSkus[data])
       } catch (err) {
         console.warn(err.code, err.message);
       }
@@ -190,7 +199,7 @@ export default class WebView_Activity extends Component {
   };
 
   async componentDidMount() {
-
+    
     try {
       const result = await RNIap.initConnection();
       await RNIap.consumeAllItemsAndroid();
@@ -217,7 +226,7 @@ export default class WebView_Activity extends Component {
                     console.warn('ackErr', ackErr);
                 }
 
-                this.setState({ receipt }, () => this.goNext());
+                this.setState({ receipt }, () => { this.goNext(this.state.receipt) });
             }
         },
     );
@@ -258,24 +267,24 @@ export default class WebView_Activity extends Component {
 
   // 이벤트 해제
   componentWillUnmount() {
-      // this.exitApp = false;
-      // BackHandler.removeEventListener('hardwareBackPress', this.handleBackButton);
-      OneSignal.removeEventListener('received', this.onReceived);
-      OneSignal.removeEventListener('opened', this.onOpened);
-      OneSignal.removeEventListener('ids', this.onIds);
+    // this.exitApp = false;
+    // BackHandler.removeEventListener('hardwareBackPress', this.handleBackButton);
+    OneSignal.removeEventListener('received', this.onReceived);
+    OneSignal.removeEventListener('opened', this.onOpened);
+    OneSignal.removeEventListener('ids', this.onIds);
 
-      if (Platform.OS === 'android') {
-        BackHandler.removeEventListener('hardwareBackPress', this.onAndroidBackPress);
-      }
+    if (Platform.OS === 'android') {
+      BackHandler.removeEventListener('hardwareBackPress', this.onAndroidBackPress);
+    }
 
-      if (purchaseUpdateSubscription) {
-        purchaseUpdateSubscription.remove();
-        purchaseUpdateSubscription = null;
-      }
-      if (purchaseErrorSubscription) {
-        purchaseErrorSubscription.remove();
-        purchaseErrorSubscription = null;
-      }
+    if (purchaseUpdateSubscription) {
+      purchaseUpdateSubscription.remove();
+      purchaseUpdateSubscription = null;
+    }
+    if (purchaseErrorSubscription) {
+      purchaseErrorSubscription.remove();
+      purchaseErrorSubscription = null;
+    }
   }
 
   // 이벤트 동작
@@ -303,7 +312,6 @@ export default class WebView_Activity extends Component {
     const urI = 'http://lotto.difsoft.com/app/index.php?device=mobile'
     const { navigation } = this.props;
     const kakaoID = navigation.getParam('kakaoID', 'NO-User');
-    console.log(kakaoID)
     const injectedJavascript = `(function() {
         window.postMessage = function(data) {
         window.ReactNativeWebView.postMessage(data);
@@ -320,72 +328,65 @@ export default class WebView_Activity extends Component {
     // const unitId = 'ca-app-pub-8640206644623436/6595265495';
 
     return (
-        <WebView
-          ref = { webView => { this.webView.ref = webView; }}
-	        onNavigationStateChange={(navState) => {
-            console.log(navState.url.slice(0,6)) 
-            if (navState.url.slice(0,6) == 'intent') {
-              // this.webView.ref.stopLoading();
-              SendIntentAndroid.openAppWithUri(navState.url);
-              // Linking.sendIntent(navState.url);
-            } else {
-              this.webView.canGoBack = navState.canGoBack;
-            }
-          }}
-          injectedJavaScript={injectedJavascript}
-          onMessage={this._onMessage}
-          source={{
-            uri: urI,
-            method: 'POST',
-            body: `${kakaoID}`,
+      <WebView
+        ref = { webView => { this.webView.ref = webView; }}
+        onNavigationStateChange={(navState) => {
+          console.log(navState.url.slice(0,6)) 
+          if (navState.url.slice(0,6) == 'intent') {
+            // this.webView.ref.stopLoading();
+            SendIntentAndroid.openAppWithUri(navState.url);
+            // Linking.sendIntent(navState.url);
+          } else {
+            this.webView.canGoBack = navState.canGoBack;
+          }
+        }}
+        injectedJavaScript={injectedJavascript}
+        onMessage={this._onMessage}
+        source={{
+          uri: urI,
+          method: 'POST',
+          body: 'm_id=' + `${kakaoID}`,
 
-          }}
-          bounces={false}
-          allowFileAccess={true}
-          domStorageEnabled={true}
-          javaScriptEnabled={true}
-          geolocationEnabled={true}
-          saveFormDataDisabled={true}
-          allowFileAccessFromFileURLS={true}
-          allowUniversalAccessFromFileURLs={true}
-          originWhitelist = {'http://*', 'https://*', 'intent://*', "sms://*", "file://*", "*"}
-          cacheEnabled={false}
-          //cacheMode={'LOAD_NO_CACHE'} //dif
-          //incognito={false} //dif
-          ignoreSslError={true}
-          javaScriptEnabled={true}
-          useWebKit={true}
-          onLoadEnd= {() => {
-            console.log('LOAD END!!');
-          }}
-          onError = {(err) => {
-            console.log('ERROR', err);
-          }}
-        />
-        /* <Banner
-          unitId={unitId}
-          size={'LARGE_BANNER'}
-          request={request.build()}
-          onAdLoaded={() => {
-            console.log('Advert loaded');
-          }}
-        /> */
+        }}
+        bounces={false}
+        allowFileAccess={true}
+        domStorageEnabled={true}
+        javaScriptEnabled={true}
+        geolocationEnabled={true}
+        saveFormDataDisabled={true}
+        allowFileAccessFromFileURLS={true}
+        allowUniversalAccessFromFileURLs={true}
+        originWhitelist = {'http://*', 'https://*', 'intent://*', "sms://*", "file://*", "*"}
+        cacheEnabled={false}
+        //cacheMode={'LOAD_NO_CACHE'} //dif
+        //incognito={false} //dif
+        ignoreSslError={true}
+        javaScriptEnabled={true}
+        useWebKit={true}
+        onLoadEnd= {() => {
+          console.log('LOAD END!!');
+        }}
+        onError = {(err) => {
+          console.log('ERROR', err);
+        }}
+      />
+      /* <Banner
+        unitId={unitId}
+        size={'LARGE_BANNER'}
+        request={request.build()}
+        onAdLoaded={() => {
+          console.log('Advert loaded');
+        }}
+      /> */
     );
   }
+
   // 이부분이 메세지 받고 리엑트에서 보내느 부분
   _onMessage = (e) => {
     console.log("step 1: react-navtive: console log 1")
     //Alert.alert(e.nativeEvent.data) // 웹에서 보낸 메세지 창으로 뛰우는 부분
     console.log(e.nativeEvent.data) // 웹에서 보낸 메세지 로그로 찍는 부분
-    if (e.nativeEvent.data == "0") {
-      this.getItems()
-    } else if (e.nativeEvent.data == "1") {
-      this.getItems()
-    } else if (e.nativeEvent.data == "2") {
-      this.getItems()
-    } else if (e.nativeEvent.data == "3") {
-      this.getItems()
-    }
+    this.getItems(e.nativeEvent.data)
     // this.webView.ref.postMessage("step 2: 리액트에서 보내는 메세지입니다.")
   }
 }
