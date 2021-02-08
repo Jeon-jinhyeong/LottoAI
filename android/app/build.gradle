@@ -133,8 +133,8 @@ android {
         applicationId "com.lotto_ai"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "1.0"
+        versionCode 3
+        versionName "3.0"
         multiDexEnabled true
 
         manifestPlaceholders = [onesignal_app_id               : "1dcdf0c6-ac3b-4120-adc4-2a41ece2bea7",
@@ -150,10 +150,10 @@ android {
     }
     signingConfigs {
         debug {
-            storeFile file('Lotto_AI_new.jks')
-            storePassword 'Tens@r99'
-            keyAlias 'key0'
-            keyPassword 'Tens@r99'
+            storeFile file(MYAPP_RELEASE_STORE_FILE)
+            storePassword MYAPP_RELEASE_STORE_PASSWORD
+            keyAlias MYAPP_RELEASE_KEY_ALIAS
+            keyPassword MYAPP_RELEASE_KEY_PASSWORD
         }
         release {
             if (project.hasProperty('MYAPP_RELEASE_STORE_FILE')) {

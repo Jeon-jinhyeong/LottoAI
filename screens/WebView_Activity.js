@@ -33,27 +33,30 @@ import RNIap, {
 const adUnitId = __DEV__ ? TestIds.INTERSTITIAL : 'ca-app-pub-8640206644623436/7250350542';
 
 const itemSkus = Platform.select({
-  ios: [
-      'com.Lotto-AI.10game',
-      'com.Lotto-AI.10game', // dooboolab
-  ],
+  // ios: [
+  //     'com.Lotto-AI.10game',
+  //     'com.Lotto-AI.10game', // dooboolab
+  // ],
   android: [
-      'android.test.purchased',
+      'com.lottoai.onem',
+      'com.lottoai.threem',
+      'com.lottoai.sixm',
+      'com.lottoai.oney',
+      // 'android.test.purchased',
       // 'android.test.canceled',
       // 'android.test.refunded',
       // 'android.test.item_unavailable',
       // 'point_1000', '5000_point', // dooboolab
-      '10game',
   ],
 });
 
 const itemSubs = Platform.select({
-  ios: [
-      'com.cooni.point1000',
-      'com.cooni.point5000', // dooboolab
-  ],
+  // ios: [
+  //     'com.cooni.point1000',
+  //     'com.cooni.point5000', // dooboolab
+  // ],
   android: [
-      '10game', // subscription
+      'com.Lotto-AI.10game', // subscription
   ],
 });
 
@@ -146,7 +149,7 @@ export default class WebView_Activity extends Component {
         // const products = await RNIap.getSubscriptions(itemSkus);
         console.log('Products', products);
         this.setState({ productList: products });
-        this.requestSubscription(itemSkus[data])
+        this.requestPurchase(itemSkus[data])
       } catch (err) {
         console.warn(err.code, err.message);
       }
