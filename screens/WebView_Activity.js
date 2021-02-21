@@ -246,24 +246,24 @@ export default class WebView_Activity extends Component {
       BackHandler.addEventListener('hardwareBackPress', this.onAndroidBackPress);
     }
 
-    // const unitId = 'ca-app-pub-8640206644623436/7250350542';
-    // const advert = firebase.admob().interstitial(unitId);
-    // const AdRequest = firebase.admob.AdRequest;
-    // const request = new AdRequest();
-    // // request.addKeyword('foo').addKeyword('bar');
-    // advert.loadAd(request.build());
+    const unitId = 'ca-app-pub-8640206644623436/7250350542';
+    const advert = firebase.admob().interstitial(unitId);
+    const AdRequest = firebase.admob.AdRequest;
+    const request = new AdRequest();
+    // request.addKeyword('foo').addKeyword('bar');
+    advert.loadAd(request.build());
 
-    // advert.on('onAdLoaded', () => {
-    //   console.log('Advert ready to show.');
-    // });
+    advert.on('onAdLoaded', () => {
+      console.log('Advert ready to show.');
+    });
 
-    // setTimeout(() => {
-    //   if (advert.isLoaded()) {
-    //     advert.show();
-    //   } else {
-    //     // Unable to show interstitial - not loaded yet.
-    //   }
-    // }, 1000);
+    setTimeout(() => {
+      if (advert.isLoaded()) {
+        advert.show();
+      } else {
+        // Unable to show interstitial - not loaded yet.
+      }
+    }, 1000);
 
     // BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
   }
@@ -315,6 +315,7 @@ export default class WebView_Activity extends Component {
     const urI = 'http://lotto.difsoft.com/app/index.php?device=mobile'
     const { navigation } = this.props;
     const kakaoID = navigation.getParam('kakaoID', 'NO-User');
+    console.log(kakaoID)
     const injectedJavascript = `(function() {
         window.postMessage = function(data) {
         window.ReactNativeWebView.postMessage(data);
