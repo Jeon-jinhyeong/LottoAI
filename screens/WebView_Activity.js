@@ -378,6 +378,7 @@ export default class WebView_Activity extends Component {
         unitId={unitId}
         size={'LARGE_BANNER'}
         request={request.build()}
+
         onAdLoaded={() => {
           console.log('Advert loaded');
         }}
