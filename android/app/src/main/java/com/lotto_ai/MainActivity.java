@@ -22,6 +22,6 @@ public class MainActivity extends ReactActivity {
     super.onCreate(savedInstanceState);
     RNBootSplash.init(R.drawable.lotto_splash, MainActivity.this);
 
-    MobileAds.initialize(this, "ca-app-pub-8640206644623436~9448358223");
+    MobileAds.initialize(this, "ca-app-pub-2074683746179209~7517608736");
   }
 }

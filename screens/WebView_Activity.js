@@ -30,7 +30,7 @@ import RNIap, {
 // // let login_web = base64.encode("m_id=" + text)
 // let login_web = new Buffer(text).toString('base64');
 
-const adUnitId = __DEV__ ? TestIds.INTERSTITIAL : 'ca-app-pub-8640206644623436/7250350542';
+// const adUnitId = __DEV__ ? TestIds.INTERSTITIAL : 'ca-app-pub-8640206644623436/7250350542';
 
 const itemSkus = Platform.select({
   // ios: [
@@ -241,29 +241,30 @@ export default class WebView_Activity extends Component {
         },
     );
 
-    //this.showInterstitialAd();
+    this.showInterstitialAd();
+
     if (Platform.OS === 'android') {
       BackHandler.addEventListener('hardwareBackPress', this.onAndroidBackPress);
     }
 
-    const unitId = 'ca-app-pub-8640206644623436/7250350542';
-    const advert = firebase.admob().interstitial(unitId);
-    const AdRequest = firebase.admob.AdRequest;
-    const request = new AdRequest();
-    // request.addKeyword('foo').addKeyword('bar');
-    advert.loadAd(request.build());
+    // const unitId = 'ca-app-pub-2074683746179209/5589998136';
+    // const advert = firebase.admob().interstitial(unitId);
+    // const AdRequest = firebase.admob.AdRequest;
+    // const request = new AdRequest();
+    // // request.addKeyword('foo').addKeyword('bar');
+    // advert.loadAd(request.build());
 
-    advert.on('onAdLoaded', () => {
-      console.log('Advert ready to show.');
-    });
+    // advert.on('onAdLoaded', () => {
+    //   console.log('Advert ready to show.');
+    // });
 
-    setTimeout(() => {
-      if (advert.isLoaded()) {
-        advert.show();
-      } else {
-        // Unable to show interstitial - not loaded yet.
-      }
-    }, 1000);
+    // setTimeout(() => {
+    //   if (advert.isLoaded()) {
+    //     advert.show();
+    //   } else {
+    //     // Unable to show interstitial - not loaded yet.
+    //   }
+    // }, 1000);
 
     // BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
   }
