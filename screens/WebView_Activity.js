@@ -102,7 +102,7 @@ export default class WebView_Activity extends Component {
   showInterstitialAd = () => {
     // Create a new instance
     // const interstitialAd = InterstitialAd.createForAdRequest(TestIds.INTERSTITIAL);
-    const adUnitId = __DEV__ ? TestIds.INTERSTITIAL : 'ca-app-pub-4577801432842517/8464621950';
+    const adUnitId = __DEV__ ? TestIds.INTERSTITIAL : 'ca-app-pub-2074683746179209/5589998136';
 
     const interstitialAd = InterstitialAd.createForAdRequest(adUnitId);
     // Add event handlers
