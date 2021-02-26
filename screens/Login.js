@@ -135,7 +135,7 @@ export default class Login extends Component {
                 this.props.navigation.navigate('Web_View', { kakaoID : `${result.id}` });
 
               } else {
-                fetch(`http://lotto.difsoft.com/app/api/?cmd=register&mode=kakao&id=${result.id}&name=${result.nickname}&email=${global.id3}&profileImgUrl=${result.profile_image_url}&img_path=${result.profile_image_url}`)
+                fetch(`http://lotto.difsoft.com/app/api/?cmd=register&mode=${result.email}&id=${result.id}&name=${result.nickname}&email=${global.id3}&profileImgUrl=${result.profile_image_url}&img_path=${result.profile_image_url}`)
                 .then((response) => response.json())
                 .then((responseJson) => {
                   if (responseJson.statusCode == 1) {
